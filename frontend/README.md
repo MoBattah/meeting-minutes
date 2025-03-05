@@ -1,88 +1,173 @@
-# Meeting Minutes - Rust Implementation (Experimental)
+# Meeting Minutes - Frontend
 
-This is an experimental Rust-based implementation of the Meeting Minutes AI assistant, located in the `/experiment` directory of the main project. It aims to provide better performance and native integration compared to the main implementation.
+A modern desktop application for recording, transcribing, and analyzing meetings with AI assistance. Built with Next.js and Tauri for a native desktop experience.
 
 ## Features
 
 - Real-time audio recording from both microphone and system audio
 - Live transcription using Whisper ASR (locally running)
-- Native desktop integration using Tauri instead of Electron
+- Native desktop integration using Tauri
 - Speaker diarization support
 - Rich text editor for note-taking
 - Privacy-focused: All processing happens locally
 
 ## Prerequisites
 
+### For macOS:
 - Node.js (v18 or later)
 - Rust (latest stable)
 - pnpm (v8 or later)
-- macOS (for system audio capture)
-- [Xcode Command Line Tools 16.2](https://developer.apple.com/download/all/?q=xcode) (Released December 11, 2024)
+- [Xcode Command Line Tools](https://developer.apple.com/download/all/?q=xcode)
+
+### For Windows:
+- Node.js (v18 or later)
+- Rust (latest stable)
+- pnpm (v8 or later)
+- Visual Studio Build Tools with C++ development tools
+- Windows 10 or later
 
 
 ## Project Structure
 
-The main project structure is:
 ```
-/meeting-minutes
-├── backend/          # Main Python backend
-├── docs/            # Project documentation
-├── frontend/        # Main Electron frontend
-└── experiment/      # Experimental implementations
-    ├── rust_based_implementation/  # This implementation
-    │   ├── src/                   # Next.js frontend
-    │   ├── src-tauri/             # Rust backend
-    │   └── whisper-server-package/ # Local transcription server
-    ├── screenpipe/                # Audio processing library
-    └── simple_recorder.rs         # Basic audio implementation
+/frontend
+├── src/                   # Next.js frontend code
+├── src-tauri/             # Rust backend for Tauri
+├── whisper-server-package/ # Local transcription server
+│   ├── models/            # Whisper models
+│   ├── whisper-server     # Pre-built server binary
+│   └── run-server.sh      # Script to start the server
+├── public/                # Static assets
+└── package.json           # Project dependencies
 ```
 
 ## Installation
 
-1. Clone the main repository:
+### For macOS:
+
+1. Install prerequisites:
    ```bash
-   git clone <repository-url>
+   # Install Homebrew if not already installed
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   
+   # Install Node.js
+   brew install node
+   
+   # Install Rust
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   
+   # Install pnpm
+   npm install -g pnpm
+   
+   # Install Xcode Command Line Tools
+   xcode-select --install
+   ```
+
+2. Clone the repository and navigate to the frontend directory:
+   ```bash
+   git clone https://github.com/Zackriya-Solutions/meeting-minutes
+   cd meeting-minutes/frontend
+   ```
+  
+
+3. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+### For Windows:
+
+1. Install prerequisites:
+   - Install [Node.js](https://nodejs.org/) (v18 or later)
+   - Install [Rust](https://www.rust-lang.org/tools/install)
+   - Install pnpm: `npm install -g pnpm`
+   - Install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with C++ development tools
+
+2. Clone the repository and navigate to the frontend directory:
+   ```cmd
+   git clone https://github.com/Zackriya-Solutions/meeting-minutes
    cd meeting-minutes/frontend
    ```
 
-
-
-2. Install dependencies:
-   ```bash
+3. Install dependencies:
+   ```cmd
    pnpm install
    ```
 
 ## Running the App
 
-Use the provided script to run the app:
+### For macOS:
+
+Use the provided script to run the app in development mode:
+```bash
+./clean_run.sh
+```
+
+To build a production version:
 ```bash
 ./clean_build.sh
 ```
 
-This script will:
-1. Install dependencies
-2. Check for and download the Whisper model if needed
-3. Start the Whisper server
-4. Launch the Tauri app in development mode
+You can specify the log level (info, debug, trace):
+```bash
+./clean_run.sh debug
+```
 
-## Implementation Details
+### For Windows:
 
-This implementation differs from the main project by:
-- Using Rust instead of Python for the backend
-- Using Tauri instead of Electron for desktop integration
-- Running Whisper locally instead of using external APIs
-- Implementing real-time audio processing in Rust
-- Using the screenpipe library for audio capture
+Use the provided script to run the app in development mode:
+```cmd
+clean_run_windows.bat
+```
 
-## Development Status
+To build a production version:
+```cmd
+clean_build_windows.bat
+```
 
-This is an experimental implementation that explores:
-- Using Rust for better performance in audio processing
-- Native desktop integration with Tauri
-- Local transcription with Whisper
-- Real-time audio processing capabilities
+## Whisper Transcription Server
 
-For the production implementation, please see the main project in the root directory.
+The application includes a pre-built Whisper server for real-time speech recognition:
+
+- Located in `whisper-server-package/`
+- Supports speaker diarization
+- Runs locally for privacy
+- Uses Metal acceleration on macOS
+
+To run the Whisper server manually:
+```bash
+cd whisper-server-package
+./run-server.sh
+```
+
+The server will be available at http://localhost:8178
+
+## Development
+
+### Frontend (Next.js)
+- The frontend is built with Next.js and Tailwind CSS
+- Source code is in the `src/` directory
+- To run only the frontend: `pnpm run dev`
+
+### Backend (Tauri)
+- The Rust backend is in the `src-tauri/` directory
+- Handles audio capture, file system access, and native integrations
+- To run only the Tauri development server: `pnpm run tauri dev`
+
+## Troubleshooting
+
+### Common Issues on macOS
+- If you encounter permission issues with scripts, make them executable:
+  ```bash
+  chmod +x clean_run.sh clean_build.sh whisper-server-package/run-server.sh
+  ```
+- For microphone access issues, ensure the app has microphone permissions in System Preferences
+- If the Whisper server fails to start, check if port 8178 is already in use
+
+### Common Issues on Windows
+- If you encounter build errors, ensure Visual Studio Build Tools are properly installed
+- For audio capture issues, check Windows privacy settings for microphone access
+- If the app fails to start, try running Command Prompt as administrator
 
 ## Contributing
 
@@ -95,9 +180,3 @@ For the production implementation, please see the main project in the root direc
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- [Whisper ASR](https://github.com/openai/whisper) for transcription
-- [Tauri](https://tauri.app/) for the desktop framework
-- [screenpipe-audio](https://github.com/screenpipe/screenpipe-audio) for audio capture

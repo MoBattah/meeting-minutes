@@ -5,9 +5,10 @@
         Meetily - AI-Powered Meeting Assistant
     </h1>
     <br>
-    <a href="https://github.com/Zackriya-Solutions/meeting-minutes/releases/tag/v0.0.2"><img src="https://img.shields.io/badge/Pre_Release-v0.0.2-brightgreen" alt="Pre-Release"></a>
-    <a href="https://github.com/Zackriya-Solutions/meeting-minutes/releases/tag/v0.0.2"><img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT"></a>
-    <a href="https://github.com/Zackriya-Solutions/meeting-minutes/releases/tag/v0.0.2"><img src="https://img.shields.io/badge/Supported_OS-macOS-yellow" alt="Pre-Release"></a>
+    <a href="https://github.com/Zackriya-Solutions/meeting-minutes/releases/tag/v0.0.3"><img src="https://img.shields.io/badge/Pre_Release-v0.0.3-brightgreen" alt="Pre-Release"></a>
+    <a href="https://github.com/Zackriya-Solutions/meeting-minutes/releases/tag/v0.0.3"><img src="https://img.shields.io/badge/Stars-1000+-red" alt="Stars"></a>
+    <a href="https://github.com/Zackriya-Solutions/meeting-minutes/releases/tag/v0.0.3"><img src="https://img.shields.io/badge/License-MIT-blue" alt="License"></a>
+    <a href="https://github.com/Zackriya-Solutions/meeting-minutes/releases/tag/v0.0.3"><img src="https://img.shields.io/badge/Supported_OS-macOS,_Windows-yellow" alt="Supported OS"></a>
     <br>
     <h3>
     <br>
@@ -53,11 +54,12 @@ While there are many meeting transcription tools available, this solution stands
 ✅ Real-time audio capture (microphone + system audio)
 
 ✅ Live transcription using Whisper.cpp
-✅ Speaker diarization
+
+🚧 Speaker diarization
 
 ✅ Local processing for privacy
 
-✅ Packaged the app for Mac Os
+✅ Packaged the app for macOS and Windows
 
 🚧 Export to Markdown/PDF
 
@@ -73,31 +75,33 @@ We are currently working on:
 > - ✅ Export to HTML
 
 
-## Release 0.0.2
+## Release 0.0.3
 
 A new release is available!
 
-Please check out the release [here](https://github.com/Zackriya-Solutions/meeting-minutes/releases/tag/v0.0.2).
+Please check out the release [here](https://github.com/Zackriya-Solutions/meeting-minutes/releases/tag/v0.0.3).
 
 ### What's New
-- Transcription quality is improved.
+- **Windows Support**: Fixed audio capture issues on Windows
+- **Improved Error Handling**: Better error handling and logging for audio devices
+- **Enhanced Device Detection**: More robust audio device detection across platforms
+- **Windows Installers**: Added both .exe and .msi installers for Windows
+- Transcription quality is improved
 - Bug fixes and improvements for frontend
 - Better backend app build process
 - Improved documentation
-- New `.dmg` package
 
 ### What would be next?
 - Database connection to save meeting minutes
-- Improve summarization quality for smaller llm models
+- Improve summarization quality for smaller LLM models
 - Add download options for meeting transcriptions 
 - Add download option for summary
 
 ### Known issues
-- Smaller LLMs can hallucinate, making summarization quality poor
-- Backend build process require CMake, C++ compiler, etc. Making it harder to build
-- Backend build process require Python 3.10 or newer
-- Frontend build process require Node.js
-
+- Smaller LLMs can hallucinate, making summarization quality poor; Please use model above 32B parameter size
+- Backend build process requires CMake, C++ compiler, etc. Making it harder to build
+- Backend build process requires Python 3.10 or newer
+- Frontend build process requires Node.js
 
 ## LLM Integration
 
@@ -105,8 +109,8 @@ The backend supports multiple LLM providers through a unified interface. Current
 
 ### Supported Providers
 - **Anthropic** (Claude models)
-- **Groq** (Llama3.2 90 B, Deepseek)
-- **Ollama** (Local models)
+- **Groq** (Llama3.2 90 B)
+- **Ollama** (Local models that supports function calling)
 
 ### Configuration
 Create `.env` file with your API keys:
@@ -165,6 +169,8 @@ GROQ_API_KEY=your_key_here
 - Python 3.10+
 - FFmpeg
 - Rust 1.65+ (for experimental features)
+- Cmake 3.22+ (for building the frontend)
+- For Windows: Visual Studio Build Tools with C++ development workload
 
 ## Setup Instructions
 
@@ -174,14 +180,28 @@ GROQ_API_KEY=your_key_here
 
 Go to the [releases page](https://github.com/Zackriya-Solutions/meeting-minutes/releases) and download the latest version.
 
-Unzip the file and run the executable.
+**For Windows:**
+- Download either the `.exe` installer or `.msi` package
+- Once the installer is downloaded, double-click the executable file to run it
+- Windows will ask if you want to run untrusted apps, click "More info" and choose "Run anyway"
+- Follow the installation wizard to complete the setup
+- The application will be installed and available on your desktop
 
-Provide necessary permissions for audio capture and microphone access (Only screen capture permission is required).
+**For macOS:**
+- Download the `dmg_darwin_arch64.zip` file
+- Extract the file
+- Double-click the `.dmg` file inside the extracted folder
+- Drag the application to your Applications folder
+- Execute the following command in terminal to remove the quarantine attribute:
+  ```
+  xattr -c /Applications/meeting-minutes-frontend.app
+  ```
+
+Provide necessary permissions for audio capture and microphone access.
 
 #### Dev run
 
 ```bash
-
 # Navigate to frontend directory
 cd frontend
 
@@ -195,18 +215,50 @@ chmod +x clean_build.sh
 ### 2. Backend Setup
 
 ```bash
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: .\venv\Scripts\activate
+# Clone the repository
+git clone https://github.com/Zackriya-Solutions/meeting-minutes.git
+cd meeting-minutes/backend
 
-# Navigate to backend directory
-cd backend
+# Create and activate virtual environment
+# On macOS/Linux:
+python -m venv venv
+source venv/bin/activate
+
+# On Windows:
+python -m venv venv
+.\venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
+# Add environment file with API keys
+# On macOS/Linux:
+echo -e "ANTHROPIC_API_KEY=your_api_key\nGROQ_API_KEY=your_api_key" | tee .env
+
+# On Windows (PowerShell):
+"ANTHROPIC_API_KEY=your_api_key`nGROQ_API_KEY=your_api_key" | Out-File -FilePath .env -Encoding utf8
+
+# Configure environment variables for Groq
+# On macOS/Linux:
+export GROQ_API_KEY=your_groq_api_key
+
+# On Windows (PowerShell):
+$env:GROQ_API_KEY="your_groq_api_key"
+
+# Build dependencies
+# On macOS/Linux:
+chmod +x build_whisper.sh
+./build_whisper.sh
+
+# On Windows:
+.\build_whisper.bat
+
 # Start backend servers
+# On macOS/Linux:
 ./clean_start_backend.sh
+
+# On Windows:
+.\start_with_output.ps1
 ```
 
 ## Development Guidelines
@@ -227,7 +279,11 @@ pip install -r requirements.txt
 
 MIT License - Feel free to use this project for your own purposes.
 
-Last updated: December 26, 2024
+## Introducing Subscription
+
+We are planning to add a subscription option so that you don't have to run the backend on your own server. This will help you scale better and run the service 24/7. This is based on a few requests we received. If you are interested, please fill out the form [here](http://zackriya.com/aimeeting/).
+
+Last updated: March 3, 2025
 
 ## Star History
 

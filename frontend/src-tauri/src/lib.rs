@@ -669,6 +669,15 @@ async fn stop_recording(args: RecordingArgs) -> Result<(), String> {
     
     log_info!("Mixed {} audio samples", mixed_data.len());
     
+    // Resample the audio to 16kHz for Whisper compatibility
+    let original_sample_rate = 48000; // Assuming original sample rate is 48kHz
+    if original_sample_rate != WHISPER_SAMPLE_RATE {
+        log_info!("Resampling audio from {} Hz to {} Hz for Whisper compatibility", 
+                 original_sample_rate, WHISPER_SAMPLE_RATE);
+        mixed_data = resample_audio(&mixed_data, original_sample_rate, WHISPER_SAMPLE_RATE);
+        log_info!("Resampled to {} samples", mixed_data.len());
+    }
+    
     // Convert to 16-bit PCM samples
     let mut bytes = Vec::with_capacity(mixed_data.len() * 2);
     for &sample in mixed_data.iter() {
@@ -681,7 +690,7 @@ async fn stop_recording(args: RecordingArgs) -> Result<(), String> {
     // Create WAV header
     let data_size = bytes.len() as u32;
     let file_size = 36 + data_size;
-    let sample_rate = 48000u32; // Standard sample rate
+    let sample_rate = WHISPER_SAMPLE_RATE; // Use Whisper's required sample rate (16000 Hz)
     let channels = 1u16; // Mono
     let bits_per_sample = 16u16;
     let block_align = channels * (bits_per_sample / 8);

@@ -15,13 +15,15 @@ name = "app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.0.2", features = [] }
+tauri-build = { version = "2.0.6", features = [] }
 reqwest = { version = "0.11", features = ["blocking", "multipart", "json"] }
 which = "6.0.1"
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
+anyhow = "1.0"
+once_cell = "1.17.1"
 
 # Cross-platform audio capture
 cpal = { git = "https://github.com/Kree0/cpal.git", branch = "master" }
@@ -47,7 +49,7 @@ bytemuck = "1.16.1"
 # Async
 tokio = { version = "1.32.0", features = ["full", "tracing"] }
 
-reqwest = { version = "0.11", features = ["blocking", "json"] }
+reqwest = { version = "0.11", features = ["blocking", "multipart", "json"] }
 
 # crossbeam
 crossbeam = "0.8.4"
@@ -72,18 +74,19 @@ rubato = "0.15.0"
 
 ffmpeg-sidecar = { git = "https://github.com/nathanbabcock/ffmpeg-sidecar", branch = "main" }
 
+# Common Tauri configuration
+tauri = { version = "2.0.6", features = [ "macos-private-api", "protocol-asset"] }
+tauri-plugin-fs = "2.2.0"
+tauri-plugin-dialog = "2.0.0"
+
 [target.'cfg(target_os = "macos")'.dependencies]
+tauri = { version = "2.0.6", features = ["protocol-asset", "macos-private-api"] }
 once_cell = "1.17.1"
 objc = "0.2.7"
-
-tauri = { version = "2.1.1", features = [ "protocol-asset", "macos-private-api"] }
-
 tauri-plugin-log = { version = "2.0.0-rc", features = ["colored"] }
 anyhow = "1.0"
 time = { version = "0.3", features = ["formatting"] }
 reqwest = { version = "0.11", features = ["multipart", "json"] }
-tauri-plugin-fs = "2.2.0"
-tauri-plugin-dialog = "2.0.0"
 
 [dev-dependencies]
 tempfile = "3.3.0"

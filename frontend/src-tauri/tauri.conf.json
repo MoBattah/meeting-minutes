@@ -9,6 +9,7 @@
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build"
   },
+  
   "app": {
     "windows": [
       {
@@ -56,7 +57,11 @@
             "core:resources:default",
             "core:menu:default",
             "core:tray:default",
-            "core:window:allow-set-title"
+            "core:window:allow-set-title",
+            {
+              "identifier": "fs:scope",
+              "allow": [{ "path": "$APPDATA/*" }]
+            }
           ]
         }
       ]
